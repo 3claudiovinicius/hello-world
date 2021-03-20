@@ -1,1 +1,52 @@
-Alterar
+;UTFPR
+;ELF52 - Sistemas Microcontrolados - S11
+;Exercício 6 - Desvio com ligação e Pilha
+;Claudio Vinicius Ohara Soares
+;2021/MAR/19
+
+;Exercício 4
+main    
+      MOV       R0,#4           ;Para o exemplo vamos calcular o produto de 4*2 = 8, R0*R1=R2
+      MOV       R1,#2         
+      PUSH      {R0,R1}         ;"Salvando" os valores iniciais de R0 e R1
+      BL        Mul8b
+      POP       {R0,R1}   
+      B         fim
+      
+Mul8b
+      SUB       R1,#1
+      CBZ       R1, retorno
+      ADD       R0,R0
+      B         Mul8b
+
+retorno     
+      MOV       R2,R0
+      BX        LR
+fim
+      nop
+
+;Exercício 5
+main
+        MOV     R0,#9             ;Para o exemplo faremos a divisão 9/2=4*2+1 ou R0/R1=R2*R1+R3
+        MOV     R1,#2             ;R0 = Dividendo, R1= Divisor, R2= Quociente, R3= Resto
+        MOV     R2,#0
+        MOV     R3,#0
+        PUSH    {R0,R1}
+        BL      Div8b
+        POP     {R0,R1}
+        B       fim
+Div8b
+        CBZ     R0,retorno
+        CMP     R0,R1
+        ITTEE   CS                ;A cada iteração R0 será decrementado de R1, quando R0<R1 o programa atinge o critério de parada
+        SUBCS   R0,R1             ;R3 recebe apenas o valor final dessa sequência de subtrações e R2 conta quantas vezes R0 foi decrementado de R1
+        ADDCS   R2,#1
+        MOVCC   R3,R0             
+        MOVCC   R0,#0
+        B       Div8b
+retorno
+        BX LR
+        
+fim
+      nop
+    
